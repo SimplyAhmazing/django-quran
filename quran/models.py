@@ -54,7 +54,8 @@ class Aya(models.Model):
         return ('quran_aya', [str(self.sura_id), str(self.number)])
 
     def __str__(self):
-        return unicode_to_buckwalter(self.text)
+        # return unicode_to_buckwalter(self.text)
+        return self.text
 
     def __unicode__(self):
         return self.text
