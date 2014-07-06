@@ -27,7 +27,15 @@ def import_quran():
         type = s.getAttribute('type')
         order = int(s.getAttribute('order'))
         rukus = int(s.getAttribute('rukus'))
-        sura_model = Sura(number=index, name=name, tname=tname, ename=ename, type=type, order=order, rukus=rukus)
+        sura_model = Sura(
+            number=index,
+            name=name,
+            tname=tname,
+            ename=ename,
+            type=type,
+            order=order,
+            rukus=rukus
+        )
 
         sura = d2.getElementsByTagName('sura')[index - 1]
         assert int(sura.getAttribute('index')) == sura_model.number
@@ -40,12 +48,12 @@ def import_quran():
             text = aya.getAttribute('text')
             aya_model = Aya(sura=sura_model, number=index, text=text)
             aya_model.save()
-            print "%d:%d" % (sura_model.number, index)
+            print("{}:{}".format(sura_model.number, index))
 
 
 @transaction.commit_on_success
 def import_translation_txt(path, translation):
-    print "Importing %s translation" % (translation.name)
+    print("Importing {} translation".format(translation.name))
     f = open(path)
     ayas = Aya.objects.all()
     for aya in ayas:
@@ -55,7 +63,7 @@ def import_translation_txt(path, translation):
         line = line.strip()
         t = TranslatedAya(sura=aya.sura, aya=aya, translation=translation, text=line)
         t.save()
-        print "[%s] %d:%d" % (translation.name, aya.sura_id, aya.number)
+        print("[{}] {}:{}".format(translation.name, aya.sura_id, aya.number))
 
 
 def import_translations():
@@ -125,7 +133,7 @@ def import_morphology_xml():
                 word = Word(sura=sura, aya=aya, number=number, token=token, root=root, lemma=lemma)
                 word.save()
 
-            print "[morphology] %d:%d" % (sura.number, aya.number)
+            print("[morphology] {}:{}".format(sura.number, aya.number))
 
 
 def import_morphology_txt():
@@ -151,7 +159,7 @@ def import_morphology_txt():
             if sura_number is not sura.number:
                 sura = Sura.objects.get(number=sura_number)
             aya = Aya.objects.get(sura=sura, number=aya_number)
-            print "[morphology] %d:%d" % (sura.number, aya.number)
+            print("[morphology] {}:{}".format(sura.number, aya.number))
 
         lemma = None
         dtoken = token
@@ -177,8 +185,10 @@ def import_morphology():
 
 def test_data(verbosity):
     verbosity = int(verbosity)
-    print verbosity
-    test_suite = unittest.TestLoader().loadTestsFromTestCase(DataIntegrityTestCase)
+    print(verbosity)
+    test_suite = (
+        unittest.TestLoader().loadTestsFromTestCase(DataIntegrityTestCase)
+    )
     unittest.TextTestRunner(verbosity=verbosity).run(test_suite)
 
 
@@ -187,7 +197,7 @@ class DataIntegrityTestCase(unittest.TestCase):
         sura = Sura.objects.get(number=sura_number)
         aya = sura.ayas.get(number=aya_number)
         word = aya.words.get(number=word_number)
-        self.assertEquals(word.token, buckwalter_to_unicode(expected_word))
+        self.assertEqual(word.token, buckwalter_to_unicode(expected_word))
 
     def test_first_ayas(self):
         """
@@ -215,4 +225,4 @@ class DataIntegrityTestCase(unittest.TestCase):
         aya = sura.ayas.get(number=aya_number)
         translation = QuranTranslation.objects.get(name='Yusuf Ali')
         t = aya.translations.get(translation=translation)
-        self.assertEquals(t.text, 'And there is none like unto Him.')
+        self.assertEqual(t.text, 'And there is none like unto Him.')
