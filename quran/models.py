@@ -118,7 +118,8 @@ class Lemma(models.Model):
         return ('quran_lemma', [str(self.id)])
 
     def __str__(self):
-        return unicode_to_buckwalter(self.token)
+        # return unicode_to_buckwalter(self.token)
+        return self.token
 
     def __unicode__(self):
         return self.token
@@ -139,10 +140,14 @@ class Word(models.Model):
 
     @models.permalink
     def get_absolute_url(self):
-        return ('quran_word', [str(self.sura_id), str(self.aya.number), str(self.number)])
+        return (
+            'quran_word',
+            [str(self.sura_id), str(self.aya.number), str(self.number)]
+        )
 
     def __str__(self):
-        return unicode_to_buckwalter(self.token)
+        # return unicode_to_buckwalter(self.token)
+        return self.token
 
     def __unicode__(self):
         return self.token
